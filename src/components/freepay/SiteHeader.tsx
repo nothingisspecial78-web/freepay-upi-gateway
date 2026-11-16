@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Menu, X, Zap } from "lucide-react";
+import { CheckCircle, Menu, X, Zap } from "lucide-react";
+import { useSubscription } from "@/hooks/use-subscription";
 
 const NAV = [
   { to: "/", label: "Store" },
@@ -14,6 +15,7 @@ const inactive =
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
+  const { isSubscribed, subscription } = useSubscription();
 
   return (
     <nav className="sticky top-0 z-40 border-b border-border bg-background/80 backdrop-blur-md">
@@ -28,19 +30,28 @@ export function SiteHeader() {
           </span>
         </Link>
 
-        <div className="hidden md:flex items-center gap-1">
-          {NAV.map((n) => (
-            <Link
-              key={n.to}
-              to={n.to}
-              activeOptions={{ exact: true }}
-              className={base}
-              activeProps={{ className: active }}
-              inactiveProps={{ className: inactive }}
-            >
-              {n.label}
-            </Link>
-          ))}
+        <div className="hidden md:flex items-center gap-3">
+          <div className="flex items-center gap-1">
+            {NAV.map((n) => (
+              <Link
+                key={n.to}
+                to={n.to}
+                activeOptions={{ exact: true }}
+                className={base}
+                activeProps={{ className: active }}
+                inactiveProps={{ className: inactive }}
+              >
+                {n.label}
+              </Link>
+            ))}
+          </div>
+
+          {isSubscribed && (
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-success/15 border border-success/30 text-success text-xs font-semibold shadow-sm animate-fade-in">
+              <CheckCircle size={12} className="text-success" />
+              <span>Subscribed: {subscription?.planName}</span>
+            </div>
+          )}
         </div>
 
         <button
@@ -59,6 +70,16 @@ export function SiteHeader() {
 
       {open && (
         <div className="md:hidden border-t border-border bg-background px-4 py-3 flex flex-col gap-2">
+          {isSubscribed && (
+            <div className="px-4 py-2.5 rounded-lg bg-success/15 border border-success/30 text-success text-xs font-semibold flex items-center justify-between mb-1">
+              <div className="flex items-center gap-1.5">
+                <CheckCircle size={13} />
+                <span>Subscribed Plan</span>
+              </div>
+              <span className="font-bold">{subscription?.planName}</span>
+            </div>
+          )}
+
           {NAV.map((n) => (
             <Link
               key={n.to}

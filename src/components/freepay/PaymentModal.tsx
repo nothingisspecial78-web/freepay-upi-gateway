@@ -16,6 +16,7 @@ import {
 import { usePayment } from "@/hooks/use-payment";
 import { simulatePaymentFn } from "@/lib/payments.functions";
 import { buildUpiUrl, ORDER_TTL_MS } from "@/lib/payment-rules";
+import { saveSubscription } from "@/lib/subscription";
 
 interface PaymentModalProps {
   amount: number;
@@ -56,12 +57,18 @@ export function PaymentModal({ amount, productName, onClose, onSuccess }: Paymen
   }, []);
 
   useEffect(() => {
-    if (status === "completed") {
-      const timer = setTimeout(onSuccess, 2500);
+    if (status === "completed" && paymentData) {
+      saveSubscription({
+        planName: productName,
+        amount: paymentData.amount,
+        transactionRef: paymentData.tn,
+        upiId: paymentData.upiVpa,
+      });
+      const timer = setTimeout(onSuccess, 3500);
       return () => clearTimeout(timer);
     }
     return undefined;
-  }, [status, onSuccess]);
+  }, [status, paymentData, productName, onSuccess]);
 
   const handleSimulatePayment = async () => {
     if (!paymentData || isSimulating) return;
@@ -251,35 +258,68 @@ export function PaymentModal({ amount, productName, onClose, onSuccess }: Paymen
           )}
 
           {status === "completed" && (
-            <div className="flex flex-col items-center gap-4 py-8 text-center animate-bounce-in">
+            <div className="flex flex-col items-center gap-4 py-4 text-center animate-bounce-in">
               <div className="relative">
-                <div className="w-20 h-20 rounded-full bg-success/20 flex items-center justify-center text-success">
-                  <svg viewBox="0 0 50 50" className="w-12 h-12">
-                    <circle
-                      cx="25"
-                      cy="25"
-                      r="20"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                    />
-                    <polyline
-                      points="16,25 22,31 34,19"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className="draw-check"
-                    />
-                  </svg>
+                <div className="w-16 h-16 rounded-full bg-success/20 border-2 border-success/40 flex items-center justify-center text-success shadow-lg">
+                  <CheckCircle size={36} className="animate-scale-in" />
                 </div>
-                <div className="absolute inset-0 rounded-full bg-success/10 animate-ping" />
+                <div className="absolute inset-0 rounded-full bg-success/15 animate-ping" />
               </div>
+
               <div>
-                <h3 className="text-foreground font-bold text-xl mb-1">Payment Successful!</h3>
-                <p className="text-muted-foreground text-sm">₹{paymentData?.amount} received</p>
-                <p className="text-subtle-foreground text-xs mt-1">Redirecting you now...</p>
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-success/20 text-success text-xs font-bold border border-success/30 mb-2">
+                  <Sparkles size={12} />
+                  <span>Subscribed Successfully</span>
+                </div>
+                <h3 className="text-foreground font-black text-2xl mb-1">Payment Successful!</h3>
+                <p className="text-muted-foreground text-sm">
+                  ₹{paymentData?.amount} received via UPI ({paymentData?.upiVpa})
+                </p>
+              </div>
+
+              {/* Subscription details card */}
+              <div className="w-full bg-gradient-to-br from-success/15 via-secondary/40 to-primary/10 border border-success/30 rounded-2xl p-4 text-left space-y-2.5">
+                <div className="flex items-center justify-between pb-2 border-b border-border/60">
+                  <span className="text-muted-foreground text-xs uppercase font-semibold">
+                    Website Subscription
+                  </span>
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-success/20 text-success text-xs font-bold">
+                    <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
+                    Active Plan
+                  </span>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-foreground font-bold text-base">{productName}</p>
+                    <p className="text-muted-foreground text-xs">Full access to FreePay platform</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-lg font-bold text-foreground">₹{paymentData?.amount}</p>
+                    <p className="text-xs text-success font-semibold">Paid</p>
+                  </div>
+                </div>
+
+                <div className="pt-2 border-t border-border/60 flex items-center justify-between text-xs text-muted-foreground">
+                  <span>Transaction Ref:</span>
+                  <span className="font-mono text-foreground font-semibold select-all text-[11px]">
+                    {paymentData?.tn}
+                  </span>
+                </div>
+              </div>
+
+              <div className="w-full space-y-2 pt-1">
+                <button
+                  type="button"
+                  onClick={onSuccess}
+                  className="btn-primary w-full py-2.5 text-sm flex items-center justify-center gap-2 font-bold"
+                >
+                  <CheckCircle size={15} />
+                  Continue to Subscribed Website
+                </button>
+                <p className="text-subtle-foreground text-xs">
+                  Your subscription is now active for this website.
+                </p>
               </div>
             </div>
           )}

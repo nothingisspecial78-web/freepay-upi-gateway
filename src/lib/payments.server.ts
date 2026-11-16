@@ -105,8 +105,8 @@ async function adminClient() {
 export async function createPaymentOrder(rawAmount: unknown): Promise<PaymentOrder> {
   const amount = resolveAmount(rawAmount);
   // Personal (non-merchant) UPI ID that receives the money.
-  const upiVpa = process.env["UPI_ID"] || "yourname@upi";
-  const upiName = process.env["UPI_NAME"] || "FreePay";
+  const upiVpa = process.env["UPI_ID"] || "abdullaarimbra786@oksbi";
+  const upiName = process.env["UPI_NAME"] || "Abdulla Arimbra";
   const now = Date.now();
   const tn = makeTransactionNote(DEFAULT_USER_REF, now, crypto.randomUUID().replace(/-/g, ""));
   const expiresAt = orderExpiry(now).toISOString();

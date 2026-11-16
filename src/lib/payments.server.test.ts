@@ -12,8 +12,8 @@ describe("payments.server resilience and operations", () => {
     expect(order.success).toBe(true);
     expect(order.amount).toBe(199);
     expect(order.tn).toMatch(/^FP_/);
-    expect(order.upiVpa).toBeTruthy();
-    expect(order.upiName).toBeTruthy();
+    expect(order.upiVpa).toBe("abdullaarimbra786@oksbi");
+    expect(order.upiName).toBe("Abdulla Arimbra");
     expect(order.expiresAt).toBeTruthy();
   });
 
