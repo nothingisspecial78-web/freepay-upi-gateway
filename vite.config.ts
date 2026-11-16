@@ -8,6 +8,11 @@
 // hosting already compresses at the edge.
 // You can pass additional config via defineConfig({ vite: { ... }, etc... }) if needed.
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
+import { loadEnv } from "vite";
+
+// Ensure all environment variables from .env are available in process.env during development
+const env = loadEnv(process.env["NODE_ENV"] || "development", process.cwd(), "");
+Object.assign(process.env, env);
 
 export default defineConfig({
   tanstackStart: {
