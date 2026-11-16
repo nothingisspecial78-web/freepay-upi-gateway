@@ -1,0 +1,96 @@
+{
+  "source": "code-archive (FreePay: React/Vite client + Express/Mongoose server)",
+  "capabilities": [
+    {
+      "capability": "code",
+      "source": "client/src (store, payment modal, dashboard)",
+      "outcome": "migrate",
+      "status": "verified",
+      "next_action": "Store, payment modal and dashboard rebuilt and exercised in browser"
+    },
+    {
+      "capability": "schema",
+      "source": "Mongoose Transaction model (MongoDB)",
+      "outcome": "migrate",
+      "status": "verified",
+      "next_action": "transactions table created; legacy_id column holds original Mongo _id on import"
+    },
+    {
+      "capability": "records",
+      "source": "MongoDB transactions collection",
+      "outcome": "migrate",
+      "status": "pending",
+      "next_action": "User to export transactions collection as JSON/CSV"
+    },
+    {
+      "capability": "auth identities",
+      "source": "User model defined but unused; userId hardcoded, no login",
+      "outcome": "not_present",
+      "status": "verified",
+      "next_action": "none"
+    },
+    {
+      "capability": "authorization",
+      "source": "None; all endpoints public",
+      "outcome": "migrate",
+      "status": "verified",
+      "next_action": "Writes only through server; public read like the original"
+    },
+    {
+      "capability": "uploaded file bytes",
+      "source": "none",
+      "outcome": "not_present",
+      "status": "verified",
+      "next_action": "none"
+    },
+    {
+      "capability": "external providers",
+      "source": "UPI pay-to-person deep link + QR to a personal UPI ID",
+      "outcome": "migrate",
+      "status": "verified",
+      "next_action": "UPI QR/deep link unchanged"
+    },
+    {
+      "capability": "public endpoints",
+      "source": "/health, /api/payment/create-qr, /api/payment/status/:tn, /api/payment/all, /api/payment/simulate/:tn",
+      "outcome": "migrate",
+      "status": "verified",
+      "next_action": "Recreated under /api/public/* and tested"
+    },
+    {
+      "capability": "webhooks",
+      "source": "POST /webhook/payment (Android notification listener)",
+      "outcome": "migrate",
+      "status": "implemented",
+      "next_action": "Rejects wrong secrets (tested); confirm a real payment via the Android listener after publish"
+    },
+    {
+      "capability": "schedules",
+      "source": "Mongo TTL index expiring pending transactions after 10 min",
+      "outcome": "adapt",
+      "status": "verified",
+      "next_action": "Expiry derived on read; covered by tests"
+    },
+    {
+      "capability": "secrets",
+      "source": "UPI_ID, UPI_NAME (personal account, replaces MERCHANT_UPI_*), WEBHOOK_SECRET; MONGO_URI/JWT_SECRET/PORT/FRONTEND_URL no longer needed",
+      "outcome": "migrate",
+      "status": "verified",
+      "next_action": "UPI_ID, UPI_NAME, WEBHOOK_SECRET saved; orders use them"
+    },
+    {
+      "capability": "cutover",
+      "source": "Android listener BACKEND_URL",
+      "outcome": "migrate",
+      "status": "pending",
+      "next_action": "User repoints listener to new webhook URL after publish"
+    },
+    {
+      "capability": "verification",
+      "source": "-",
+      "outcome": "migrate",
+      "status": "partial",
+      "next_action": "Build, tests, browser purchase flow and REST endpoints pass; live webhook pending secret + listener"
+    }
+  ]
+}
